@@ -1,5 +1,5 @@
---// LUAWARE V1 - CLOUD EXECUTION & ENDGAME AUTOMATION
---// Logic: GitHub Auto-Load -> Infinite NPC Radar -> Space+WASD Eject -> 50s Wipe -> Return
+--// LUAWARE V1 - CLOUD EXECUTION & DYNAMIC INFILTRATION
+--// Logic: GitHub Auto-Load -> Space+WASD Eject -> 50s Wait -> Wipe -> Dynamic Village Scan -> Return
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
@@ -98,40 +98,34 @@ if game.PlaceId == 3231515867 then
         StatusTxt.Text = "LUAWARE: NPC Uzaktan Tetikleniyor..."
         
         local promptFired = false
-        
-        -- YENİ: NPC BULUNANA KADAR SONSUZ TARAMA DÖNGÜSÜ
-        while not promptFired do
-            for _, v in pairs(Workspace:GetDescendants()) do
-                if v:IsA("ProximityPrompt") then
-                    if string.find(string.lower(v.ActionText), "operasyon") or string.find(string.lower(v.ObjectText), "operasyon") then
-                        if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
-                            local oldCFrame = LocalPlayer.Character.HumanoidRootPart.CFrame
-                            LocalPlayer.Character.HumanoidRootPart.CFrame = v.Parent.CFrame
-                            task.wait(0.2)
-                            fireproximityprompt(v, 1) 
-                            task.wait(0.2)
-                            LocalPlayer.Character.HumanoidRootPart.CFrame = oldCFrame
-                            promptFired = true
-                            break
-                        end
+        for _, v in pairs(Workspace:GetDescendants()) do
+            if v:IsA("ProximityPrompt") then
+                if string.find(string.lower(v.ActionText), "operasyon") or string.find(string.lower(v.ObjectText), "operasyon") then
+                    if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+                        local oldCFrame = LocalPlayer.Character.HumanoidRootPart.CFrame
+                        LocalPlayer.Character.HumanoidRootPart.CFrame = v.Parent.CFrame
+                        task.wait(0.2)
+                        fireproximityprompt(v, 1) 
+                        task.wait(0.2)
+                        LocalPlayer.Character.HumanoidRootPart.CFrame = oldCFrame
+                        promptFired = true
+                        break
                     end
                 end
             end
-            
-            if not promptFired then
-                StatusTxt.Text = "LUAWARE: NPC Araniyor (Tekrar Deneniyor)..."
-                task.wait(1) -- 1 saniye bekle ve tekrar tara
-            end
         end
         
-        -- NPC Bulunup E'ye basıldıktan sonraki işlemler:
-        StatusTxt.Text = "LUAWARE: Menulere Tiklaniyor..."
-        task.wait(1.5)
-        for i=1, 15 do if ForceClickUI("Operasyonlar") then break end task.wait(0.5) end
-        task.wait(1)
-        for i=1, 15 do if ForceClickUI("ŞEHRİ") then break end task.wait(0.5) end
-        task.wait(1)
-        for i=1, 15 do if ForceClickUI("BAŞLAT") then break end task.wait(0.5) end
+        if promptFired then
+            StatusTxt.Text = "LUAWARE: Menulere Tiklaniyor..."
+            task.wait(1.5)
+            for i=1, 15 do if ForceClickUI("Operasyonlar") then break end task.wait(0.5) end
+            task.wait(1)
+            for i=1, 15 do if ForceClickUI("ŞEHRİ") then break end task.wait(0.5) end
+            task.wait(1)
+            for i=1, 15 do if ForceClickUI("BAŞLAT") then break end task.wait(0.5) end
+        else
+            StatusTxt.Text = "LUAWARE HATA: NPC Bulunamadi!"
+        end
     end)
 
 -------------------------------------------------------------------------
@@ -328,36 +322,54 @@ else
             SystemStatusLbl.TextColor3 = Color3.fromRGB(220, 20, 20)
             TimerLbl.Text = "Tetikleyici: ATESLENDI"
             
-            local ilkBotPozisyonu = nil
+            -- Botların gerçek pozisyonlarını listeleyen tablo
+            local botPositions = {}
 
-            -- Çift Dikiş Temizlik
-            for cycle = 1, 2 do
-                for _, obj in ipairs(Workspace:GetDescendants()) do
-                    if obj:IsA("Model") and obj ~= LocalPlayer.Character then
-                        local botHum = obj:FindFirstChildOfClass("Humanoid")
-                        local botHrp = obj:FindFirstChild("HumanoidRootPart")
-                        if botHum and botHrp and botHum.Health > 0 and not Players:GetPlayerFromCharacter(obj) then
-                            if not ilkBotPozisyonu then ilkBotPozisyonu = botHrp.Position end
-                            botHum.Health = 0
-                            obj:BreakJoints()
-                        end
+            -- Bütün botları öldür ve pozisyonlarını kaydet
+            for _, obj in ipairs(Workspace:GetDescendants()) do
+                if obj:IsA("Model") and obj ~= LocalPlayer.Character then
+                    local botHum = obj:FindFirstChildOfClass("Humanoid")
+                    local botHrp = obj:FindFirstChild("HumanoidRootPart")
+                    if botHum and botHrp and botHum.Health > 0 and not Players:GetPlayerFromCharacter(obj) then
+                        table.insert(botPositions, botHrp.Position)
+                        botHum.Health = 0
+                        obj:BreakJoints()
                     end
                 end
-                task.wait(0.5)
             end
             
-            -- GÖREV ONAYLATMA (KÖYÜN MERKEZİ VE DAHA ARKA TARAFLARI)
-            if ilkBotPozisyonu and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+            -- Çift dikiş temizlik (Gözden kaçan varsa diye 2. tarama)
+            task.wait(0.5)
+            for _, obj in ipairs(Workspace:GetDescendants()) do
+                if obj:IsA("Model") and obj ~= LocalPlayer.Character then
+                    local botHum = obj:FindFirstChildOfClass("Humanoid")
+                    if botHum and botHum.Health > 0 and not Players:GetPlayerFromCharacter(obj) then
+                        botHum.Health = 0
+                        obj:BreakJoints()
+                    end
+                end
+            end
+            
+            -- GÖREV ONAYLATMA (DİNAMİK KÖY TARAMASI)
+            if #botPositions > 0 and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
                 SystemStatusLbl.Text = "Durum: BOLGE TEMIZLIGI ONAYLANIYOR..."
                 SystemStatusLbl.TextColor3 = Color3.fromRGB(100, 255, 100)
                 local myHrp = LocalPlayer.Character.HumanoidRootPart
                 
-                -- Önce botun olduğu yere, sonra 60 ve 120 stud daha arkasına ışınlanır
-                local offsets = { CFrame.new(0, 0, 0), CFrame.new(0, 0, -60), CFrame.new(0, 0, -120) }
-                for _, offset in ipairs(offsets) do
-                    myHrp.CFrame = CFrame.new(ilkBotPozisyonu) * offset
-                    task.wait(0.5) 
-                end
+                -- İlk, Ortanca ve Son botun gerçek konumları (+3 metre yukarıdan düşerek garanti algılatma)
+                local posBaslangic = botPositions[1]
+                local posOrta = botPositions[math.floor(#botPositions / 2)] or posBaslangic
+                local posArka = botPositions[#botPositions] or posBaslangic
+                
+                -- Köyün Başlangıcı
+                myHrp.CFrame = CFrame.new(posBaslangic + Vector3.new(0, 3, 0))
+                task.wait(0.8)
+                -- Köyün Ortası
+                myHrp.CFrame = CFrame.new(posOrta + Vector3.new(0, 3, 0))
+                task.wait(0.8)
+                -- Köyün En Arkası
+                myHrp.CFrame = CFrame.new(posArka + Vector3.new(0, 3, 0))
+                task.wait(0.8)
             end
             
             SystemStatusLbl.Text = "Durum: USSE DONUS BEKLENIYOR..."
