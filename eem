@@ -1,6 +1,7 @@
+--// LUAWARE V2 - CLOUD EXECUTION & SMART INFILTRATION
+--// Creator: umutk1mmm
+--// Logic: GitHub Auto-Load -> Space+WASD Eject -> Village Penetration -> Wipe
 
-
-local LUAWARE_PAYLOAD = [=[
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local Workspace = game:GetService("Workspace")
@@ -13,17 +14,17 @@ local TweenService = game:GetService("TweenService")
 
 local LocalPlayer = Players.LocalPlayer
 
---// YARDIMCI GÖRSEL: Premium Drop Shadow
+--// YARDIMCI GÖRSEL: Drop Shadow
 local function CreateShadow(parent)
     local shadow = Instance.new("ImageLabel", parent)
     shadow.Name = "DropShadow"
     shadow.BackgroundTransparency = 1
-    shadow.Position = UDim2.new(0, -20, 0, -20)
-    shadow.Size = UDim2.new(1, 40, 1, 40)
+    shadow.Position = UDim2.new(0, -15, 0, -15)
+    shadow.Size = UDim2.new(1, 30, 1, 30)
     shadow.ZIndex = -1
     shadow.Image = "rbxassetid://1316045217"
     shadow.ImageColor3 = Color3.fromRGB(0, 0, 0)
-    shadow.ImageTransparency = 0.4
+    shadow.ImageTransparency = 0.5
     shadow.ScaleType = Enum.ScaleType.Slice
     shadow.SliceCenter = Rect.new(10, 10, 118, 118)
     return shadow
@@ -39,7 +40,7 @@ local function IsTrulyVisible(obj)
     return true
 end
 
---// YARDIMCI FONKSİYON: ZORBA TIKLAMA MOTORU
+--// YARDIMCI FONKSİYON: KESKİN NİŞANCI TIKLAMA MOTORU
 local function ForceClickUI(searchText)
     local found = false
     local insetY = GuiService:GetGuiInset().Y
@@ -81,22 +82,20 @@ if game.PlaceId == 3231515867 then
     StatusFrame.Size = UDim2.new(0, 320, 0, 50)
     StatusFrame.Position = UDim2.new(0.5, -160, 0, 20)
     StatusFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 18)
-    Instance.new("UICorner", StatusFrame).CornerRadius = UDim.new(0, 8)
-    local stroke = Instance.new("UIStroke", StatusFrame)
-    stroke.Color = Color3.fromRGB(255, 30, 30)
-    stroke.Thickness = 1.5
+    Instance.new("UICorner", StatusFrame).CornerRadius = UDim.new(0, 6)
+    Instance.new("UIStroke", StatusFrame).Color = Color3.fromRGB(220, 20, 20)
     CreateShadow(StatusFrame)
     
     local StatusTxt = Instance.new("TextLabel", StatusFrame)
     StatusTxt.Size = UDim2.new(1, 0, 1, 0)
     StatusTxt.BackgroundTransparency = 1
-    StatusTxt.Text = "LUAWARE V1: Lobi Otomasyonu Devrede..."
+    StatusTxt.Text = "LUAWARE V2: Lobi Otomasyonu Devrede..."
     StatusTxt.Font = Enum.Font.GothamBold
-    StatusTxt.TextColor3 = Color3.fromRGB(255, 50, 50)
+    StatusTxt.TextColor3 = Color3.fromRGB(220, 20, 20)
     StatusTxt.TextSize = 14
 
     task.spawn(function()
-        task.wait(3) 
+        task.wait(2) 
         StatusTxt.Text = "LUAWARE: NPC Uzaktan Tetikleniyor..."
         
         local promptFired = false
@@ -145,35 +144,28 @@ else
     Gui.Name = "LuaWare_Executioner"
     Gui.ResetOnSpawn = false
 
-    --// PREMIUM MENÜ TASARIMI
     local MainFrame = Instance.new("Frame", Gui)
-    MainFrame.Size = UDim2.new(0, 360, 0, 340)
-    MainFrame.Position = UDim2.new(0.5, -180, 0.5, -170)
-    MainFrame.BackgroundColor3 = Color3.fromRGB(12, 12, 14)
+    MainFrame.Size = UDim2.new(0, 340, 0, 310)
+    MainFrame.Position = UDim2.new(0.5, -170, 0.5, -155)
+    MainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 18)
     MainFrame.BorderSizePixel = 0
     MainFrame.Active = true
-    Instance.new("UICorner", MainFrame).CornerRadius = UDim.new(0, 8)
+    Instance.new("UICorner", MainFrame).CornerRadius = UDim.new(0, 6)
     local MainStroke = Instance.new("UIStroke", MainFrame)
-    MainStroke.Color = Color3.fromRGB(50, 50, 55)
+    MainStroke.Color = Color3.fromRGB(45, 45, 50)
     MainStroke.Thickness = 1.5
     CreateShadow(MainFrame)
 
-    --// PÜRÜZSÜZ DRAG (TWEEN SİSTEMLİ)
+    --// PÜRÜZSÜZ DRAG (TWEEN)
     local dragging, dragInput, mousePos, framePos
     MainFrame.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-            dragging = true
-            mousePos = input.Position
-            framePos = MainFrame.Position
-            input.Changed:Connect(function()
-                if input.UserInputState == Enum.UserInputState.End then dragging = false end
-            end)
+            dragging = true; mousePos = input.Position; framePos = MainFrame.Position
+            input.Changed:Connect(function() if input.UserInputState == Enum.UserInputState.End then dragging = false end end)
         end
     end)
     MainFrame.InputChanged:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
-            dragInput = input
-        end
+        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then dragInput = input end
     end)
     UserInputService.InputChanged:Connect(function(input)
         if input == dragInput and dragging then
@@ -183,85 +175,77 @@ else
     end)
 
     local Title = Instance.new("TextLabel", MainFrame)
-    Title.Size = UDim2.new(1, -40, 0, 50)
-    Title.Position = UDim2.new(0, 20, 0, 10)
+    Title.Size = UDim2.new(1, -30, 0, 50)
+    Title.Position = UDim2.new(0, 15, 0, 10)
     Title.BackgroundTransparency = 1
-    Title.Text = "LUAWARE V1"
+    Title.Text = "LUAWARE V2"
     Title.Font = Enum.Font.GothamBlack
-    Title.TextColor3 = Color3.fromRGB(255, 40, 40)
-    Title.TextSize = 24
+    Title.TextColor3 = Color3.fromRGB(220, 20, 20)
+    Title.TextSize = 22
     Title.TextXAlignment = Enum.TextXAlignment.Left
 
     local CreatorMark = Instance.new("TextLabel", MainFrame)
-    CreatorMark.Size = UDim2.new(1, -40, 0, 20)
-    CreatorMark.Position = UDim2.new(0, 20, 0, 40)
+    CreatorMark.Size = UDim2.new(1, -30, 0, 20)
+    CreatorMark.Position = UDim2.new(0, 15, 0, 40)
     CreatorMark.BackgroundTransparency = 1
-    CreatorMark.Text = "PREMIUM EXECUTIONER"
+    CreatorMark.Text = "PROJECT EXECUTIONER // umutk1mmm"
     CreatorMark.Font = Enum.Font.GothamBold
-    CreatorMark.TextColor3 = Color3.fromRGB(150, 150, 150)
-    CreatorMark.TextSize = 11
+    CreatorMark.TextColor3 = Color3.fromRGB(120, 120, 120)
+    CreatorMark.TextSize = 10
     CreatorMark.TextXAlignment = Enum.TextXAlignment.Left
 
     local SepLine = Instance.new("Frame", MainFrame)
     SepLine.Size = UDim2.new(1, 0, 0, 1)
-    SepLine.Position = UDim2.new(0, 0, 0, 80)
+    SepLine.Position = UDim2.new(0, 0, 0, 75)
     SepLine.BackgroundColor3 = Color3.fromRGB(35, 35, 40)
     SepLine.BorderSizePixel = 0
 
     local function CreatePanel(parent, title, yPos, height)
         local Panel = Instance.new("Frame", parent)
-        Panel.Size = UDim2.new(1, -40, 0, height)
-        Panel.Position = UDim2.new(0, 20, 0, yPos)
-        Panel.BackgroundColor3 = Color3.fromRGB(18, 18, 22)
-        Instance.new("UICorner", Panel).CornerRadius = UDim.new(0, 6)
+        Panel.Size = UDim2.new(1, -30, 0, height)
+        Panel.Position = UDim2.new(0, 15, 0, yPos)
+        Panel.BackgroundColor3 = Color3.fromRGB(20, 20, 24)
+        Instance.new("UICorner", Panel).CornerRadius = UDim.new(0, 4)
         Instance.new("UIStroke", Panel).Color = Color3.fromRGB(45, 45, 50)
-        
         local Lbl = Instance.new("TextLabel", Panel)
-        Lbl.Size = UDim2.new(1, -20, 0, 20)
-        Lbl.Position = UDim2.new(0, 10, 0, 8)
+        Lbl.Size = UDim2.new(1, -15, 0, 20)
+        Lbl.Position = UDim2.new(0, 10, 0, 5)
         Lbl.BackgroundTransparency = 1
         Lbl.Text = title
         Lbl.Font = Enum.Font.GothamBlack
         Lbl.TextColor3 = Color3.fromRGB(255, 255, 255)
-        Lbl.TextSize = 12
+        Lbl.TextSize = 11
         Lbl.TextXAlignment = Enum.TextXAlignment.Left
-        
-        local InnerLine = Instance.new("Frame", Panel)
-        InnerLine.Size = UDim2.new(1, -20, 0, 1)
-        InnerLine.Position = UDim2.new(0, 10, 0, 32)
-        InnerLine.BackgroundColor3 = Color3.fromRGB(40, 40, 45)
-        InnerLine.BorderSizePixel = 0
-        
         return Panel
     end
 
-    local function AddInfoRow(panel, yPos, labelText, color)
+    local function AddInfoRow(panel, yPos, labelText)
         local Txt = Instance.new("TextLabel", panel)
         Txt.Size = UDim2.new(1, -20, 0, 15)
         Txt.Position = UDim2.new(0, 10, 0, yPos)
         Txt.BackgroundTransparency = 1
         Txt.Text = labelText
         Txt.Font = Enum.Font.GothamMedium
-        Txt.TextColor3 = color or Color3.fromRGB(190, 190, 190)
+        Txt.TextColor3 = Color3.fromRGB(180, 180, 180)
         Txt.TextSize = 11
         Txt.TextXAlignment = Enum.TextXAlignment.Left
         return Txt
     end
 
-    local InfoPanel = CreatePanel(MainFrame, "SERVER & CLIENT INFO", 100, 100)
-    local SrvLbl = AddInfoRow(InfoPanel, 40, "Oyun: Yukleniyor...")
-    local PlyLbl = AddInfoRow(InfoPanel, 60, "Client: @" .. LocalPlayer.Name)
-    local SrvStatLbl = AddInfoRow(InfoPanel, 80, "Oyuncu: 0/0  |  Zaman: 00:00")
+    local InfoPanel = CreatePanel(MainFrame, "SERVER & CLIENT INFO", 95, 95)
+    local SrvLbl = AddInfoRow(InfoPanel, 35, "Oyun: Yukleniyor...")
+    local PlyLbl = AddInfoRow(InfoPanel, 55, "Client: @" .. LocalPlayer.Name)
+    local SrvStatLbl = AddInfoRow(InfoPanel, 75, "Oyuncu: 0/0  |  Zaman: 00:00")
 
     task.spawn(function()
         local success, info = pcall(function() return MarketplaceService:GetProductInfo(game.PlaceId) end)
         if success and info then SrvLbl.Text = "Oyun: " .. string.sub(info.Name, 1, 25) else SrvLbl.Text = "Oyun: Bilinmiyor" end
     end)
 
-    local CombatPanel = CreatePanel(MainFrame, "EXECUTION STATUS", 215, 100)
-    local BotCountLbl = AddInfoRow(CombatPanel, 40, "Canli Hedef Sayisi: 0")
-    local SystemStatusLbl = AddInfoRow(CombatPanel, 60, "Durum: OTOMATIK BASLATILIYOR...", Color3.fromRGB(255, 180, 50))
-    local TimerLbl = AddInfoRow(CombatPanel, 80, "Tetikleyici: BEKLENIYOR")
+    local CombatPanel = CreatePanel(MainFrame, "EXECUTION STATUS", 205, 95)
+    local BotCountLbl = AddInfoRow(CombatPanel, 35, "Canli Hedef Sayisi: 0")
+    local SystemStatusLbl = AddInfoRow(CombatPanel, 55, "Durum: OTOMATIK BASLATILIYOR...")
+    local TimerLbl = AddInfoRow(CombatPanel, 75, "Tetikleyici: BEKLENIYOR")
 
     local function FormatTime(seconds)
         local mins = math.floor(seconds / 60)
@@ -292,7 +276,7 @@ else
             if not Gui.Parent then break end
             if ForceClickUI("ÜSSE GERİ DÖN") or ForceClickUI("GERİ DÖN") then
                 SystemStatusLbl.Text = "Durum: USSE DONULUYOR..."
-                SystemStatusLbl.TextColor3 = Color3.fromRGB(100, 255, 100)
+                SystemStatusLbl.TextColor3 = Color3.fromRGB(255, 255, 100)
                 TimerLbl.Text = "Tetikleyici: EKRAN ALGILANDI"
                 getgenv().KillAuraAktif = false 
                 task.wait(5) 
@@ -300,65 +284,85 @@ else
         end
     end)
 
-    --// FULL OTOMATİK KATLİAM (ULTRA FAST WIPE & KLAVYE SİMÜLASYONU)
+    --// FULL OTOMATİK KATLİAM SİSTEMİ
     task.spawn(function()
         task.wait(2) 
         
-        SystemStatusLbl.Text = "Durum: KLAVYE ILE INILIYOR!"
+        SystemStatusLbl.Text = "Durum: KLAVYE SİMÜLASYONU..."
         SystemStatusLbl.TextColor3 = Color3.fromRGB(255, 150, 50)
         
-        for i = 1, 3 do 
+        -- KLAVYEYLE YÜRÜYEREK İNİŞ (SPACE + W + D)
+        for i = 1, 4 do 
             if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
                 VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.Space, false, game)
-                task.wait(0.1)
+                task.wait(0.05)
                 VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.Space, false, game)
                 
                 VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.W, false, game)
                 VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.D, false, game)
-                task.wait(0.5)
+                task.wait(0.5) -- Yarım saniye yürü
                 
                 VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.W, false, game)
                 VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.D, false, game)
             end
-            task.wait(0.5)
+            task.wait(0.2)
+        end
+
+        SystemStatusLbl.Text = "Durum: KOYE SIZILIYOR..."
+        
+        -- KÖYÜN İÇİNE SIZMA (TÜM BOTLARI YÜKLETMEK İÇİN)
+        local ilkBot = nil
+        for _, obj in ipairs(Workspace:GetDescendants()) do
+            if obj:IsA("Model") and obj ~= LocalPlayer.Character then
+                local hum = obj:FindFirstChildOfClass("Humanoid")
+                local hrp = obj:FindFirstChild("HumanoidRootPart")
+                if hum and hrp and hum.Health > 0 and not Players:GetPlayerFromCharacter(obj) then
+                    ilkBot = hrp
+                    break
+                end
+            end
+        end
+
+        if ilkBot and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+            -- İlk bulunan botun kafasına ışınlan ve bekle (Oyun orayı yüklesin)
+            LocalPlayer.Character.HumanoidRootPart.CFrame = ilkBot.CFrame * CFrame.new(0, 5, 0)
+            task.wait(1.5) 
         end
 
         SystemStatusLbl.Text = "Durum: ZAMANLAYICI BASLADI"
         getgenv().KillAuraAktif = true
 
+        -- 50 Saniye Say
         for i = 50, 1, -1 do
             if not getgenv().KillAuraAktif or not Gui.Parent then break end
-            TimerLbl.Text = "Tetikleyici: " .. i .. " SANIYE SONRA BAŞLAYACAK"
+            TimerLbl.Text = "Tetikleyici: " .. i .. " SANIYE SONRA PATLAYACAK"
             task.wait(1)
         end
         
         if getgenv().KillAuraAktif then
             SystemStatusLbl.Text = "Durum: TUM HEDEFLER YOK EDILDI!"
-            SystemStatusLbl.TextColor3 = Color3.fromRGB(255, 50, 50)
+            SystemStatusLbl.TextColor3 = Color3.fromRGB(220, 20, 20)
             TimerLbl.Text = "Tetikleyici: ATESLENDI"
             
-            --// OPTİMİZASYONLU (GECİKMESİZ) KILL AURA
             local ilkBotPozisyonu = nil
-            local hedefler = {}
 
-            -- Hedefleri beklemeden topla
-            for _, obj in ipairs(Workspace:GetDescendants()) do
-                if obj:IsA("Model") and obj ~= LocalPlayer.Character then
-                    local botHum = obj:FindFirstChildOfClass("Humanoid")
-                    local botHrp = obj:FindFirstChild("HumanoidRootPart")
-                    if botHum and botHrp and botHum.Health > 0 and not Players:GetPlayerFromCharacter(obj) then
-                        table.insert(hedefler, {botHum, botHrp, obj})
+            -- Çift Dikiş Temizlik (Gözden kaçan bot kalmasın diye 2 kere tarar)
+            for cycle = 1, 2 do
+                for _, obj in ipairs(Workspace:GetDescendants()) do
+                    if obj:IsA("Model") and obj ~= LocalPlayer.Character then
+                        local botHum = obj:FindFirstChildOfClass("Humanoid")
+                        local botHrp = obj:FindFirstChild("HumanoidRootPart")
+                        if botHum and botHrp and botHum.Health > 0 and not Players:GetPlayerFromCharacter(obj) then
+                            if not ilkBotPozisyonu then ilkBotPozisyonu = botHrp.Position end
+                            botHum.Health = 0
+                            obj:BreakJoints()
+                        end
                     end
                 end
+                task.wait(0.5)
             end
             
-            -- Hepsini tek bir frame'de (karede) acımadan anında sil
-            for _, hedef in ipairs(hedefler) do
-                if not ilkBotPozisyonu then ilkBotPozisyonu = hedef[2].Position end
-                hedef[1].Health = 0
-                hedef[3]:BreakJoints()
-            end
-            
+            -- GÖREV ONAYLATMA
             if ilkBotPozisyonu and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
                 SystemStatusLbl.Text = "Durum: BOLGE TEMIZLIGI ONAYLANIYOR..."
                 SystemStatusLbl.TextColor3 = Color3.fromRGB(100, 255, 100)
@@ -376,13 +380,9 @@ else
         end
     end)
 end
-]=]
 
---// TÜM EXPLOITLER İÇİN QOT BYPASS MOTORU
+--// GITHUB AUTO-EXECUTE (QUEUE ON TELEPORT) MOTORU
 local qot = queue_on_teleport or queueonteleport or (syn and syn.queue_on_teleport) or (fluxus and fluxus.queue_on_teleport) or (getgenv and getgenv().queue_on_teleport)
 if qot then
-    qot("local LUAWARE_PAYLOAD = [=[" .. LUAWARE_PAYLOAD .. "]=]\n" .. LUAWARE_PAYLOAD)
+    qot([[loadstring(game:HttpGet("https://raw.githubusercontent.com/5255umutcan33-netizen/eemteam-gecme/main/eem"))()]])
 end
-
---// İLK BAŞLATMA
-loadstring(LUAWARE_PAYLOAD)()
