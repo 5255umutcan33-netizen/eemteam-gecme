@@ -1,5 +1,5 @@
 --// LUAWARE V1 - CLOUD EXECUTION & ENDGAME AUTOMATION
---// Logic: GitHub Auto-Load -> Space+WASD Eject -> 50s Wait -> Wipe -> 1-Tap Center TP -> Return
+--// Logic: GitHub Auto-Load -> Space+WASD Eject -> 50s Wait -> Wipe -> Deep Village TP -> Return
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
@@ -94,7 +94,8 @@ if game.PlaceId == 3231515867 then
     StatusTxt.TextSize = 14
 
     task.spawn(function()
-        task.wait(2) 
+        -- Lobiye dönünce oyunun tam yüklenmesi için garanti bekleme süresi
+        task.wait(4) 
         StatusTxt.Text = "LUAWARE: NPC Uzaktan Tetikleniyor..."
         
         local promptFired = false
@@ -340,13 +341,18 @@ else
                 task.wait(0.5)
             end
             
-            -- GÖREV ONAYLATMA (TEK SEFER KÖYÜN MERKEZİNE IŞINLANMA)
+            -- GÖREV ONAYLATMA (KÖYÜN MERKEZİ VE DAHA ARKA TARAFLARI)
             if ilkBotPozisyonu and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
                 SystemStatusLbl.Text = "Durum: BOLGE TEMIZLIGI ONAYLANIYOR..."
                 SystemStatusLbl.TextColor3 = Color3.fromRGB(100, 255, 100)
                 local myHrp = LocalPlayer.Character.HumanoidRootPart
-                myHrp.CFrame = CFrame.new(ilkBotPozisyonu)
-                task.wait(1) 
+                
+                -- Önce botun olduğu yere, sonra 60 ve 120 stud (metre) daha arkasına ışınlanır
+                local offsets = { CFrame.new(0, 0, 0), CFrame.new(0, 0, -60), CFrame.new(0, 0, -120) }
+                for _, offset in ipairs(offsets) do
+                    myHrp.CFrame = CFrame.new(ilkBotPozisyonu) * offset
+                    task.wait(0.5) 
+                end
             end
             
             SystemStatusLbl.Text = "Durum: USSE DONUS BEKLENIYOR..."
