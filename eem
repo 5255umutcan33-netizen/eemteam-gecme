@@ -1,5 +1,5 @@
---// LUAWARE V1 - CLOUD EXECUTION & DYNAMIC INFILTRATION
---// Logic: GitHub Auto-Load -> Space+WASD Eject -> 50s Wait -> Wipe -> Dynamic Village Scan -> Center Hold -> Return
+--// LUAWARE V1 - CLOUD EXECUTION & RAYCAST EJECT SYSTEM
+--// Logic: Auto-Load -> Raycast Ground Smash -> 50s Wait -> Wipe -> Dynamic Village Scan -> Return
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
@@ -98,34 +98,37 @@ if game.PlaceId == 3231515867 then
         StatusTxt.Text = "LUAWARE: NPC Uzaktan Tetikleniyor..."
         
         local promptFired = false
-        for _, v in pairs(Workspace:GetDescendants()) do
-            if v:IsA("ProximityPrompt") then
-                if string.find(string.lower(v.ActionText), "operasyon") or string.find(string.lower(v.ObjectText), "operasyon") then
-                    if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
-                        local oldCFrame = LocalPlayer.Character.HumanoidRootPart.CFrame
-                        LocalPlayer.Character.HumanoidRootPart.CFrame = v.Parent.CFrame
-                        task.wait(0.2)
-                        fireproximityprompt(v, 1) 
-                        task.wait(0.2)
-                        LocalPlayer.Character.HumanoidRootPart.CFrame = oldCFrame
-                        promptFired = true
-                        break
+        
+        while not promptFired do
+            for _, v in pairs(Workspace:GetDescendants()) do
+                if v:IsA("ProximityPrompt") then
+                    if string.find(string.lower(v.ActionText), "operasyon") or string.find(string.lower(v.ObjectText), "operasyon") then
+                        if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+                            local oldCFrame = LocalPlayer.Character.HumanoidRootPart.CFrame
+                            LocalPlayer.Character.HumanoidRootPart.CFrame = v.Parent.CFrame
+                            task.wait(0.2)
+                            fireproximityprompt(v, 1) 
+                            task.wait(0.2)
+                            LocalPlayer.Character.HumanoidRootPart.CFrame = oldCFrame
+                            promptFired = true
+                            break
+                        end
                     end
                 end
             end
+            if not promptFired then
+                StatusTxt.Text = "LUAWARE: NPC Araniyor (Tekrar Deneniyor)..."
+                task.wait(1)
+            end
         end
         
-        if promptFired then
-            StatusTxt.Text = "LUAWARE: Menulere Tiklaniyor..."
-            task.wait(1.5)
-            for i=1, 15 do if ForceClickUI("Operasyonlar") then break end task.wait(0.5) end
-            task.wait(1)
-            for i=1, 15 do if ForceClickUI("ŞEHRİ") then break end task.wait(0.5) end
-            task.wait(1)
-            for i=1, 15 do if ForceClickUI("BAŞLAT") then break end task.wait(0.5) end
-        else
-            StatusTxt.Text = "LUAWARE HATA: NPC Bulunamadi!"
-        end
+        StatusTxt.Text = "LUAWARE: Menulere Tiklaniyor..."
+        task.wait(1.5)
+        for i=1, 15 do if ForceClickUI("Operasyonlar") then break end task.wait(0.5) end
+        task.wait(1)
+        for i=1, 15 do if ForceClickUI("ŞEHRİ") then break end task.wait(0.5) end
+        task.wait(1)
+        for i=1, 15 do if ForceClickUI("BAŞLAT") then break end task.wait(0.5) end
     end)
 
 -------------------------------------------------------------------------
@@ -283,28 +286,43 @@ else
         end
     end)
 
-    --// FULL OTOMATİK KATLİAM SİSTEMİ
+    --// FULL OTOMATİK KATLİAM & RAYCAST(LAZER) İLE ANINDA İNİŞ
     task.spawn(function()
         task.wait(2) 
         
-        SystemStatusLbl.Text = "Durum: KLAVYE SİMÜLASYONU..."
+        SystemStatusLbl.Text = "Durum: ZEMİNE ÇAKILIYOR!"
         SystemStatusLbl.TextColor3 = Color3.fromRGB(255, 150, 50)
         
-        -- KLAVYEYLE YÜRÜYEREK İNİŞ (SPACE + W + D)
-        for i = 1, 4 do 
-            if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
-                VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.Space, false, game)
-                task.wait(0.05)
-                VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.Space, false, game)
+        -- %100 GARANTİLİ RAYCAST İNİŞİ (Yerin altını engelleyen teknoloji)
+        for i = 1, 3 do 
+            if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") and LocalPlayer.Character:FindFirstChild("Humanoid") then
+                local char = LocalPlayer.Character
+                local hum = char.Humanoid
+                local hrp = char.HumanoidRootPart
                 
-                VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.W, false, game)
-                VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.D, false, game)
-                task.wait(0.5)
-                
-                VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.W, false, game)
-                VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.D, false, game)
+                if hum.Sit then
+                    hum.Sit = false
+                    task.wait(0.05)
+                    
+                    -- Yere doğru görünmez bir lazer fırlat
+                    local rayOrigin = hrp.Position
+                    local rayDirection = Vector3.new(0, -1000, 0)
+                    local raycastParams = RaycastParams.new()
+                    raycastParams.FilterDescendantsInstances = {char}
+                    raycastParams.FilterType = Enum.RaycastFilterType.Exclude
+                    
+                    local hit = Workspace:Raycast(rayOrigin, rayDirection, raycastParams)
+                    
+                    if hit then
+                        -- Zemini buldu! Yerin altına girmemek için tam 3 metre havaya (ve 5 metre sağa) çak
+                        hrp.CFrame = CFrame.new(hit.Position + Vector3.new(5, 3, 5))
+                    else
+                        -- Harita tam yüklenmediyse güvenli mesafeye fırlat
+                        hrp.CFrame = hrp.CFrame + Vector3.new(30, 10, 30)
+                    end
+                end
             end
-            task.wait(0.2)
+            task.wait(0.5)
         end
 
         SystemStatusLbl.Text = "Durum: ZAMANLAYICI BASLADI"
@@ -349,7 +367,7 @@ else
                 end
             end
             
-            -- GÖREV ONAYLATMA (SONUNDA KESİNLİKLE ORTADA KALACAK)
+            -- GÖREV ONAYLATMA (DİNAMİK KÖY TARAMASI: Başlangıç -> Arka -> ORTA)
             if #botPositions > 0 and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
                 SystemStatusLbl.Text = "Durum: BOLGE TEMIZLIGI ONAYLANIYOR..."
                 SystemStatusLbl.TextColor3 = Color3.fromRGB(100, 255, 100)
@@ -359,17 +377,17 @@ else
                 local posOrta = botPositions[math.floor(#botPositions / 2)] or posBaslangic
                 local posArka = botPositions[#botPositions] or posBaslangic
                 
-                -- 1. Önce Köyün Başlangıcına (Kısa uğrar)
+                -- 1. Köyün Başlangıcı (Kısa temas)
                 myHrp.CFrame = CFrame.new(posBaslangic + Vector3.new(0, 3, 0))
                 task.wait(0.5)
                 
-                -- 2. Sonra Köyün En Arkasına (Kısa uğrar)
+                -- 2. Köyün En Arkası (Kısa temas)
                 myHrp.CFrame = CFrame.new(posArka + Vector3.new(0, 3, 0))
                 task.wait(0.5)
                 
-                -- 3. EN SON ORTADA DURUR VE BEKLER (Başta durmaz)
+                -- 3. Köyün Tam Ortası (Sürekli burada bekleyerek onayı alır)
                 myHrp.CFrame = CFrame.new(posOrta + Vector3.new(0, 3, 0))
-                task.wait(1.5) -- Oyunun net olarak onaylaması için bekler
+                task.wait(1.5)
             end
             
             SystemStatusLbl.Text = "Durum: USSE DONUS BEKLENIYOR..."
