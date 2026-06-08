@@ -1,6 +1,5 @@
---// LUAWARE V2 - CLOUD EXECUTION & SMART INFILTRATION
---// Creator: umutk1mmm
---// Logic: GitHub Auto-Load -> Space+WASD Eject -> Village Penetration -> Wipe
+--// LUAWARE V1 - CLOUD EXECUTION & ENDGAME AUTOMATION
+--// Logic: GitHub Auto-Load -> Space+WASD Eject -> 50s Wait -> Wipe -> 1-Tap Center TP -> Return
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
@@ -89,7 +88,7 @@ if game.PlaceId == 3231515867 then
     local StatusTxt = Instance.new("TextLabel", StatusFrame)
     StatusTxt.Size = UDim2.new(1, 0, 1, 0)
     StatusTxt.BackgroundTransparency = 1
-    StatusTxt.Text = "LUAWARE V2: Lobi Otomasyonu Devrede..."
+    StatusTxt.Text = "LUAWARE V1: Lobi Otomasyonu Devrede..."
     StatusTxt.Font = Enum.Font.GothamBold
     StatusTxt.TextColor3 = Color3.fromRGB(220, 20, 20)
     StatusTxt.TextSize = 14
@@ -178,7 +177,7 @@ else
     Title.Size = UDim2.new(1, -30, 0, 50)
     Title.Position = UDim2.new(0, 15, 0, 10)
     Title.BackgroundTransparency = 1
-    Title.Text = "LUAWARE V2"
+    Title.Text = "LUAWARE V1"
     Title.Font = Enum.Font.GothamBlack
     Title.TextColor3 = Color3.fromRGB(220, 20, 20)
     Title.TextSize = 22
@@ -188,7 +187,7 @@ else
     CreatorMark.Size = UDim2.new(1, -30, 0, 20)
     CreatorMark.Position = UDim2.new(0, 15, 0, 40)
     CreatorMark.BackgroundTransparency = 1
-    CreatorMark.Text = "PROJECT EXECUTIONER // umutk1mmm"
+    CreatorMark.Text = "PROJECT EXECUTIONER"
     CreatorMark.Font = Enum.Font.GothamBold
     CreatorMark.TextColor3 = Color3.fromRGB(120, 120, 120)
     CreatorMark.TextSize = 10
@@ -276,7 +275,7 @@ else
             if not Gui.Parent then break end
             if ForceClickUI("ÜSSE GERİ DÖN") or ForceClickUI("GERİ DÖN") then
                 SystemStatusLbl.Text = "Durum: USSE DONULUYOR..."
-                SystemStatusLbl.TextColor3 = Color3.fromRGB(255, 255, 100)
+                SystemStatusLbl.TextColor3 = Color3.fromRGB(100, 255, 100)
                 TimerLbl.Text = "Tetikleyici: EKRAN ALGILANDI"
                 getgenv().KillAuraAktif = false 
                 task.wait(5) 
@@ -300,33 +299,12 @@ else
                 
                 VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.W, false, game)
                 VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.D, false, game)
-                task.wait(0.5) -- Yarım saniye yürü
+                task.wait(0.5)
                 
                 VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.W, false, game)
                 VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.D, false, game)
             end
             task.wait(0.2)
-        end
-
-        SystemStatusLbl.Text = "Durum: KOYE SIZILIYOR..."
-        
-        -- KÖYÜN İÇİNE SIZMA (TÜM BOTLARI YÜKLETMEK İÇİN)
-        local ilkBot = nil
-        for _, obj in ipairs(Workspace:GetDescendants()) do
-            if obj:IsA("Model") and obj ~= LocalPlayer.Character then
-                local hum = obj:FindFirstChildOfClass("Humanoid")
-                local hrp = obj:FindFirstChild("HumanoidRootPart")
-                if hum and hrp and hum.Health > 0 and not Players:GetPlayerFromCharacter(obj) then
-                    ilkBot = hrp
-                    break
-                end
-            end
-        end
-
-        if ilkBot and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
-            -- İlk bulunan botun kafasına ışınlan ve bekle (Oyun orayı yüklesin)
-            LocalPlayer.Character.HumanoidRootPart.CFrame = ilkBot.CFrame * CFrame.new(0, 5, 0)
-            task.wait(1.5) 
         end
 
         SystemStatusLbl.Text = "Durum: ZAMANLAYICI BASLADI"
@@ -335,7 +313,7 @@ else
         -- 50 Saniye Say
         for i = 50, 1, -1 do
             if not getgenv().KillAuraAktif or not Gui.Parent then break end
-            TimerLbl.Text = "Tetikleyici: " .. i .. " SANIYE SONRA PATLAYACAK"
+            TimerLbl.Text = "Tetikleyici: " .. i .. " SANIYE SONRA BASLAYACAK"
             task.wait(1)
         end
         
@@ -346,7 +324,7 @@ else
             
             local ilkBotPozisyonu = nil
 
-            -- Çift Dikiş Temizlik (Gözden kaçan bot kalmasın diye 2 kere tarar)
+            -- Çift Dikiş Temizlik
             for cycle = 1, 2 do
                 for _, obj in ipairs(Workspace:GetDescendants()) do
                     if obj:IsA("Model") and obj ~= LocalPlayer.Character then
@@ -362,16 +340,13 @@ else
                 task.wait(0.5)
             end
             
-            -- GÖREV ONAYLATMA
+            -- GÖREV ONAYLATMA (TEK SEFER KÖYÜN MERKEZİNE IŞINLANMA)
             if ilkBotPozisyonu and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
                 SystemStatusLbl.Text = "Durum: BOLGE TEMIZLIGI ONAYLANIYOR..."
                 SystemStatusLbl.TextColor3 = Color3.fromRGB(100, 255, 100)
                 local myHrp = LocalPlayer.Character.HumanoidRootPart
-                local offsets = { Vector3.new(10, 0, 10), Vector3.new(-10, 0, -10), Vector3.new(15, 0, 0) }
-                for _, offset in ipairs(offsets) do
-                    myHrp.CFrame = CFrame.new(ilkBotPozisyonu + offset)
-                    task.wait(0.6) 
-                end
+                myHrp.CFrame = CFrame.new(ilkBotPozisyonu)
+                task.wait(1) 
             end
             
             SystemStatusLbl.Text = "Durum: USSE DONUS BEKLENIYOR..."
