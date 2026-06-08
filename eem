@@ -1,5 +1,5 @@
 --// LUAWARE V1 - CLOUD EXECUTION & DYNAMIC INFILTRATION
---// Logic: GitHub Auto-Load -> Space+WASD Eject -> 50s Wait -> Wipe -> Dynamic Village Scan -> Return
+--// Logic: GitHub Auto-Load -> Space+WASD Eject -> 50s Wait -> Wipe -> Dynamic Village Scan -> Center Hold -> Return
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
@@ -322,7 +322,6 @@ else
             SystemStatusLbl.TextColor3 = Color3.fromRGB(220, 20, 20)
             TimerLbl.Text = "Tetikleyici: ATESLENDI"
             
-            -- Botların gerçek pozisyonlarını listeleyen tablo
             local botPositions = {}
 
             -- Bütün botları öldür ve pozisyonlarını kaydet
@@ -338,7 +337,7 @@ else
                 end
             end
             
-            -- Çift dikiş temizlik (Gözden kaçan varsa diye 2. tarama)
+            -- Çift Dikiş Temizlik
             task.wait(0.5)
             for _, obj in ipairs(Workspace:GetDescendants()) do
                 if obj:IsA("Model") and obj ~= LocalPlayer.Character then
@@ -350,26 +349,27 @@ else
                 end
             end
             
-            -- GÖREV ONAYLATMA (DİNAMİK KÖY TARAMASI)
+            -- GÖREV ONAYLATMA (SONUNDA KESİNLİKLE ORTADA KALACAK)
             if #botPositions > 0 and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
                 SystemStatusLbl.Text = "Durum: BOLGE TEMIZLIGI ONAYLANIYOR..."
                 SystemStatusLbl.TextColor3 = Color3.fromRGB(100, 255, 100)
                 local myHrp = LocalPlayer.Character.HumanoidRootPart
                 
-                -- İlk, Ortanca ve Son botun gerçek konumları (+3 metre yukarıdan düşerek garanti algılatma)
                 local posBaslangic = botPositions[1]
                 local posOrta = botPositions[math.floor(#botPositions / 2)] or posBaslangic
                 local posArka = botPositions[#botPositions] or posBaslangic
                 
-                -- Köyün Başlangıcı
+                -- 1. Önce Köyün Başlangıcına (Kısa uğrar)
                 myHrp.CFrame = CFrame.new(posBaslangic + Vector3.new(0, 3, 0))
-                task.wait(0.8)
-                -- Köyün Ortası
-                myHrp.CFrame = CFrame.new(posOrta + Vector3.new(0, 3, 0))
-                task.wait(0.8)
-                -- Köyün En Arkası
+                task.wait(0.5)
+                
+                -- 2. Sonra Köyün En Arkasına (Kısa uğrar)
                 myHrp.CFrame = CFrame.new(posArka + Vector3.new(0, 3, 0))
-                task.wait(0.8)
+                task.wait(0.5)
+                
+                -- 3. EN SON ORTADA DURUR VE BEKLER (Başta durmaz)
+                myHrp.CFrame = CFrame.new(posOrta + Vector3.new(0, 3, 0))
+                task.wait(1.5) -- Oyunun net olarak onaylaması için bekler
             end
             
             SystemStatusLbl.Text = "Durum: USSE DONUS BEKLENIYOR..."
