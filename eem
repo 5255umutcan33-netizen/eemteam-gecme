@@ -1,5 +1,5 @@
---// LUAWARE V1 - CLOUD EXECUTION & BLACK HOLE INFILTRATION
---// Logic: GitHub Auto-Load -> Space+WASD Eject -> 50s Wait -> True Center Black Hole -> Wipe -> Return
+--// LUAWARE V1 - CLOUD EXECUTION & DYNAMIC INFILTRATION
+--// Logic: GitHub Auto-Load -> Space+WASD Eject -> 50s Wait -> Wipe -> Dynamic Village Scan -> Center Hold -> Return
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
@@ -318,59 +318,58 @@ else
         end
         
         if getgenv().KillAuraAktif then
-            SystemStatusLbl.Text = "Durum: KARA DELIK AKTIF!"
+            SystemStatusLbl.Text = "Durum: TUM HEDEFLER YOK EDILDI!"
             SystemStatusLbl.TextColor3 = Color3.fromRGB(220, 20, 20)
             TimerLbl.Text = "Tetikleyici: ATESLENDI"
             
-            local trueCenter = Vector3.new(0, 0, 0)
-            local botCount = 0
-            local botList = {}
+            local botPositions = {}
 
-            -- 1. Bütün botların pozisyonlarını alıp matematiksel merkezi hesapla
+            -- Bütün botları öldür ve pozisyonlarını kaydet
             for _, obj in ipairs(Workspace:GetDescendants()) do
                 if obj:IsA("Model") and obj ~= LocalPlayer.Character then
                     local botHum = obj:FindFirstChildOfClass("Humanoid")
                     local botHrp = obj:FindFirstChild("HumanoidRootPart")
                     if botHum and botHrp and botHum.Health > 0 and not Players:GetPlayerFromCharacter(obj) then
-                        trueCenter = trueCenter + botHrp.Position
-                        botCount = botCount + 1
-                        table.insert(botList, {Hum = botHum, Hrp = botHrp, Obj = obj})
+                        table.insert(botPositions, botHrp.Position)
+                        botHum.Health = 0
+                        obj:BreakJoints()
                     end
                 end
             end
             
-            -- 2. Eğer bot bulunduysa merkeze çek ve katlet
-            if botCount > 0 and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
-                -- Koordinatların ortalamasını alarak kusursuz merkezi bul
-                trueCenter = trueCenter / botCount
-                
-                -- Bütün botları bu merkeze (Kara Deliğe) ışınla ve öldür
-                for _, bot in ipairs(botList) do
-                    bot.Hrp.CFrame = CFrame.new(trueCenter)
-                    bot.Hum.Health = 0
-                    bot.Obj:BreakJoints()
-                end
-
-                -- Çift Dikiş Temizlik (Hafızaya alınmayan kaldıysa)
-                task.wait(0.5)
-                for _, obj in ipairs(Workspace:GetDescendants()) do
-                    if obj:IsA("Model") and obj ~= LocalPlayer.Character then
-                        local botHum = obj:FindFirstChildOfClass("Humanoid")
-                        if botHum and botHum.Health > 0 and not Players:GetPlayerFromCharacter(obj) then
-                            botHum.Health = 0
-                            obj:BreakJoints()
-                        end
+            -- Çift Dikiş Temizlik
+            task.wait(0.5)
+            for _, obj in ipairs(Workspace:GetDescendants()) do
+                if obj:IsA("Model") and obj ~= LocalPlayer.Character then
+                    local botHum = obj:FindFirstChildOfClass("Humanoid")
+                    if botHum and botHum.Health > 0 and not Players:GetPlayerFromCharacter(obj) then
+                        botHum.Health = 0
+                        obj:BreakJoints()
                     end
                 end
-                
-                -- GÖREV ONAYLATMA: Seni tam o yığının ortasına çakıp bekletiyor
-                SystemStatusLbl.Text = "Durum: MERKEZDE BEKLENIYOR..."
+            end
+            
+            -- GÖREV ONAYLATMA (SONUNDA KESİNLİKLE ORTADA KALACAK)
+            if #botPositions > 0 and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+                SystemStatusLbl.Text = "Durum: BOLGE TEMIZLIGI ONAYLANIYOR..."
                 SystemStatusLbl.TextColor3 = Color3.fromRGB(100, 255, 100)
                 local myHrp = LocalPlayer.Character.HumanoidRootPart
                 
-                -- Köyün tam matematiksel merkezine ışınlan (3 metre havadan düşerek)
-                myHrp.CFrame = CFrame.new(trueCenter + Vector3.new(0, 3, 0))
-                task.wait(2) -- Oyunun tamamen algılaması için 2 saniye net bekleme
+                local posBaslangic = botPositions[1]
+                local posOrta = botPositions[math.floor(#botPositions / 2)] or posBaslangic
+                local posArka = botPositions[#botPositions] or posBaslangic
+                
+                -- 1. Önce Köyün Başlangıcına (Kısa uğrar)
+                myHrp.CFrame = CFrame.new(posBaslangic + Vector3.new(0, 3, 0))
+                task.wait(0.5)
+                
+                -- 2. Sonra Köyün En Arkasına (Kısa uğrar)
+                myHrp.CFrame = CFrame.new(posArka + Vector3.new(0, 3, 0))
+                task.wait(0.5)
+                
+                -- 3. EN SON ORTADA DURUR VE BEKLER (Başta durmaz)
+                myHrp.CFrame = CFrame.new(posOrta + Vector3.new(0, 3, 0))
+                task.wait(1.5) -- Oyunun net olarak onaylaması için bekler
             end
             
             SystemStatusLbl.Text = "Durum: USSE DONUS BEKLENIYOR..."
